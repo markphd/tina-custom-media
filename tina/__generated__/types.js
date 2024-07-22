@@ -145,18 +145,18 @@ export function getSdk(requester) {
   };
 }
 import { createClient } from "tinacms/dist/client";
-const generateRequester = (client) => {
-  const requester = async (doc, vars, options) => {
+const generateRequester = (client, options) => {
+  const requester = async (doc, vars, options2) => {
     let url = client.apiUrl;
-    if (options?.branch) {
+    if (options2?.branch) {
       const index = client.apiUrl.lastIndexOf("/");
-      url = client.apiUrl.substring(0, index + 1) + options.branch;
+      url = client.apiUrl.substring(0, index + 1) + options2.branch;
     }
     const data = await client.request({
       query: doc,
       variables: vars,
       url
-    }, options);
+    });
     return { data: data?.data, errors: data?.errors, query: doc, variables: vars || {} };
   };
   return requester;
@@ -169,7 +169,7 @@ export const ExperimentalGetTinaClient = () => getSdk(
     })
   )
 );
-export const queries = (client) => {
-  const requester = generateRequester(client);
+export const queries = (client, options) => {
+  const requester = generateRequester(client, options);
   return getSdk(requester);
 };
